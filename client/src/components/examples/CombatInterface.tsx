@@ -1,6 +1,6 @@
 import CombatInterface from '../CombatInterface'
-import chrisPortraitUrl from "@assets/generated_images/Chris_character_portrait_c5374e0f.png";
-import soraPortraitUrl from "@assets/generated_images/Sora_character_portrait_93173527.png";
+import chrisPortraitUrl from "@assets/chris_portrait.png";
+import soraPortraitUrl from "@assets/sora_portrait.png";
 
 export default function CombatInterfaceExample() {
   //todo: remove mock functionality

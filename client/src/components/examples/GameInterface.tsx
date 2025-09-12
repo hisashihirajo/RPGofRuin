@@ -1,5 +1,5 @@
 import GameInterface from '../GameInterface'
-import chrisPortraitUrl from "@assets/generated_images/Chris_character_portrait_c5374e0f.png";
+import chrisPortraitUrl from "@assets/chris_portrait.png";
 
 export default function GameInterfaceExample() {
   const mockCharacter = {

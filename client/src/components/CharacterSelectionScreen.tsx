@@ -1,9 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import chrisPortraitUrl from "@assets/generated_images/Chris_character_portrait_c5374e0f.png";
-import soraPortraitUrl from "@assets/generated_images/Sora_character_portrait_93173527.png";
-import alexPortraitUrl from "@assets/generated_images/Alex_character_portrait_168ba368.png";
+import chrisPortraitUrl from "@assets/chris_portrait.png";
+import soraPortraitUrl from "@assets/sora_portrait.png";
+import alexPortraitUrl from "@assets/alex_portrait.png";
 import worldBackgroundUrl from "@assets/generated_images/Post-apocalyptic_world_overview_scene_51792660.png";
 
 interface Character {
