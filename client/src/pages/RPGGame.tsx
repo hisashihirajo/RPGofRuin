@@ -5,13 +5,14 @@ import CombatInterface from "@/components/CombatInterface";
 import InventorySystem from "@/components/InventorySystem";
 import RelationshipSystem from "@/components/RelationshipSystem";
 import MapInterface from "@/components/MapInterface";
+import LocalMapInterface from "@/components/LocalMapInterface";
 import ThemeToggle from "@/components/ThemeToggle";
 import chrisPortraitUrl from "@assets/chris_portrait.png";
 import soraPortraitUrl from "@assets/sora_portrait.png";
 import alexPortraitUrl from "@assets/alex_portrait.png";
 import divantePortraitUrl from "@assets/generated_images/Divante_character_portrait_7f9dc346.png";
 
-type GameState = "character-selection" | "main-game" | "combat" | "inventory" | "relationships" | "map";
+type GameState = "character-selection" | "main-game" | "combat" | "inventory" | "relationships" | "map" | "local-map";
 
 interface Character {
   id: string;
@@ -177,9 +178,11 @@ export default function RPGGame() {
       {gameState === "main-game" && (
         <GameInterface
           character={selectedCharacter}
+          currentLocation={currentLocation}
           onCombatStart={() => setGameState("combat")}
           onInventoryOpen={() => setGameState("inventory")}
           onMapOpen={() => setGameState("map")}
+          onLocalMapOpen={() => setGameState("local-map")}
           onRelationshipsOpen={() => setGameState("relationships")}
         />
       )}
@@ -218,6 +221,18 @@ export default function RPGGame() {
             setGameState("main-game");
           }}
           onClose={() => setGameState("main-game")}
+        />
+      )}
+
+      {gameState === "local-map" && (
+        <LocalMapInterface
+          locationId={currentLocation}
+          onInteract={(pointId) => {
+            console.log(`Interacting with: ${pointId}`);
+            // Future: Handle specific interactions based on point type
+          }}
+          onExit={() => setGameState("main-game")}
+          onWorldMap={() => setGameState("map")}
         />
       )}
     </div>

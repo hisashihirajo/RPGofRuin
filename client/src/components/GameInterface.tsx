@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Shield, Zap, Users, Map, Package } from "lucide-react";
+import { Heart, Shield, Zap, Users, Map, Package, Search } from "lucide-react";
 
 interface Character {
   id: string;
@@ -27,17 +27,21 @@ interface Character {
 
 interface GameInterfaceProps {
   character: Character;
+  currentLocation: string;
   onCombatStart: () => void;
   onInventoryOpen: () => void;
   onMapOpen: () => void;
+  onLocalMapOpen: () => void;
   onRelationshipsOpen: () => void;
 }
 
 export default function GameInterface({ 
   character, 
+  currentLocation,
   onCombatStart, 
   onInventoryOpen, 
   onMapOpen, 
+  onLocalMapOpen,
   onRelationshipsOpen 
 }: GameInterfaceProps) {
   const [currentStory, setCurrentStory] = useState({
@@ -136,7 +140,7 @@ export default function GameInterface({
                   <Shield className="w-4 h-4 mr-2" />
                   戦闘開始
                 </Button>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <Button 
                     onClick={onInventoryOpen}
                     variant="outline" 
@@ -146,14 +150,6 @@ export default function GameInterface({
                     <Package className="w-4 h-4" />
                   </Button>
                   <Button 
-                    onClick={onMapOpen}
-                    variant="outline" 
-                    size="sm"
-                    data-testid="button-map"
-                  >
-                    <Map className="w-4 h-4" />
-                  </Button>
-                  <Button 
                     onClick={onRelationshipsOpen}
                     variant="outline" 
                     size="sm"
@@ -161,6 +157,39 @@ export default function GameInterface({
                   >
                     <Users className="w-4 h-4" />
                   </Button>
+                </div>
+                
+                {/* Location and Map Buttons */}
+                <div className="pt-2 border-t">
+                  <div className="text-xs text-muted-foreground mb-2">現在地</div>
+                  <div className="text-sm font-semibold mb-2">
+                    {currentLocation === "safe_shelter" && "安全な避難所"}
+                    {currentLocation === "ruined_city" && "廃墟の街"}
+                    {currentLocation === "mutator_settlement" && "ミューテーター居住区"}
+                    {currentLocation === "industrial_ruins" && "工業地帯の廃墟"}
+                    {currentLocation === "underground_lab" && "地下研究所"}
+                    {currentLocation === "old_battlefield" && "古い戦場"}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button 
+                      onClick={onLocalMapOpen}
+                      variant="outline" 
+                      size="sm"
+                      data-testid="button-local-map"
+                    >
+                      <Search className="w-4 h-4 mr-1" />
+                      探索
+                    </Button>
+                    <Button 
+                      onClick={onMapOpen}
+                      variant="outline" 
+                      size="sm"
+                      data-testid="button-map"
+                    >
+                      <Map className="w-4 h-4 mr-1" />
+                      世界地図
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
