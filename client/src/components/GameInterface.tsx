@@ -162,13 +162,14 @@ export default function GameInterface({
                 {/* Location and Map Buttons */}
                 <div className="pt-2 border-t">
                   <div className="text-xs text-muted-foreground mb-2">現在地</div>
-                  <div className="text-sm font-semibold mb-2">
+                  <div className="text-sm font-semibold mb-2" data-testid="current-location-display">
                     {currentLocation === "safe_shelter" && "安全な避難所"}
                     {currentLocation === "ruined_city" && "廃墟の街"}
                     {currentLocation === "mutator_settlement" && "ミューテーター居住区"}
                     {currentLocation === "industrial_ruins" && "工業地帯の廃墟"}
                     {currentLocation === "underground_lab" && "地下研究所"}
                     {currentLocation === "old_battlefield" && "古い戦場"}
+                    {!["safe_shelter", "ruined_city", "mutator_settlement", "industrial_ruins", "underground_lab", "old_battlefield"].includes(currentLocation) && `未知の場所: ${currentLocation}`}
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <Button 

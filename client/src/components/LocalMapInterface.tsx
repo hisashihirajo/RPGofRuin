@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowUp, ArrowDown, ArrowLeftIcon, ArrowRight, Search, Users, Package } from "lucide-react";
 
-// Import local map images
-import safeShelterMap from "@assets/generated_images/Safe_shelter_interior_map_24f0be89.png";
-import ruinedCityMap from "@assets/generated_images/Ruined_city_district_map_4f3eb0b6.png";
-import mutatorSettlementMap from "@assets/generated_images/Mutator_settlement_map_6f18fe03.png";
-import industrialRuinsMap from "@assets/generated_images/Industrial_ruins_map_dc772877.png";
-import undergroundLabMap from "@assets/generated_images/Underground_research_lab_map_e9d3d28c.png";
-import oldBattlefieldMap from "@assets/generated_images/Old_battlefield_map_6ebe262e.png";
+// Import local map images - Updated with area-specific detailed maps
+import safeShelterMap from "@assets/generated_images/Safe_shelter_interior_map_e91461c3.png";
+import ruinedCityMap from "@assets/generated_images/Ruined_city_exploration_map_595fa71d.png";
+import mutatorSettlementMap from "@assets/generated_images/Mutator_settlement_community_map_63779bed.png";
+import industrialRuinsMap from "@assets/generated_images/Industrial_ruins_factory_map_1dc26719.png";
+import undergroundLabMap from "@assets/generated_images/Underground_research_lab_map_76cb2c40.png";
+import oldBattlefieldMap from "@assets/generated_images/Old_battlefield_war_map_d3bc0dc1.png";
 
 interface InteractionPoint {
   id: string;
@@ -19,6 +19,13 @@ interface InteractionPoint {
   type: "npc" | "item" | "exit" | "story" | "shop";
   isAccessible: boolean;
   requirement?: string;
+}
+
+interface MapData {
+  name: string;
+  mapImage: string;
+  description: string;
+  points: InteractionPoint[];
 }
 
 interface LocalMapInterfaceProps {
@@ -40,7 +47,7 @@ export default function LocalMapInterface({
   const [dialogText, setDialogText] = useState("");
 
   // Get map data based on location
-  const getMapData = () => {
+  const getMapData = (): MapData => {
     switch (locationId) {
       case "safe_shelter":
         return {
@@ -136,7 +143,7 @@ export default function LocalMapInterface({
     }
   };
 
-  const mapData = getMapData();
+  const mapData = useMemo(() => getMapData(), [locationId]);
 
   // Check for nearby interaction points
   useEffect(() => {
@@ -150,6 +157,7 @@ export default function LocalMapInterface({
   }, [playerPosition, mapData.points]);
 
   // Handle keyboard input for movement
+  // Stable keyboard handler that doesn't recreate on every render
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     const moveSpeed = 2;
     
@@ -192,18 +200,18 @@ export default function LocalMapInterface({
         break;
       case 'Enter':
       case ' ':
-        if (nearbyPoint) {
-          handleInteraction();
-        }
+        event.preventDefault();
+        // Directly check nearbyPoint state and call interaction
+        handleInteraction();
         break;
       case 'Escape':
         event.preventDefault();
         onExit();
         break;
     }
-  }, [nearbyPoint, onExit]);
+  }, [onExit]); // Only depend on onExit, not nearbyPoint
 
-  // Add event listeners
+  // Add event listeners - now stable since handleKeyPress doesn't change often
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
     return () => {

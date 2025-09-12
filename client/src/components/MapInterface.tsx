@@ -185,6 +185,7 @@ export default function MapInterface({
   const handleLocationEnter = () => {
     if (nearbyLocation) {
       onLocationSelect(nearbyLocation.id);
+      setShowLocationDialog(false);
     }
   };
 
