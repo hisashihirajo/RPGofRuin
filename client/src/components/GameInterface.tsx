@@ -198,30 +198,30 @@ export default function GameInterface({
 
         {/* Main Story Area */}
         <div className="lg:col-span-3">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl font-serif">{currentStory.title}</CardTitle>
+          <Card className="bg-card dark:bg-card">
+            <CardHeader className="border-b border-border">
+              <CardTitle className="text-2xl font-serif text-foreground">{currentStory.title}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="prose prose-sm max-w-none">
-                <p className="text-foreground leading-relaxed">
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <p className="text-foreground leading-relaxed text-base">
                   {currentStory.text}
                 </p>
               </div>
 
-              <div className="space-y-3">
-                <h4 className="font-semibold">選択肢:</h4>
+              <div className="space-y-3 border-t border-border pt-4">
+                <h4 className="font-semibold text-foreground">選択肢:</h4>
                 <div className="space-y-2">
                   {currentStory.choices.map((choice, index) => (
                     <Button
                       key={index}
                       onClick={choice.action}
                       variant="outline"
-                      className="w-full text-left justify-start h-auto p-4"
+                      className="w-full text-left justify-start h-auto p-4 hover-elevate bg-card/50 dark:bg-card/50 border-border text-foreground"
                       data-testid={`button-choice-${index}`}
                     >
-                      <span className="font-mono text-primary mr-3">{index + 1}.</span>
-                      {choice.text}
+                      <span className="font-mono text-primary mr-3 font-bold">{index + 1}.</span>
+                      <span className="text-foreground">{choice.text}</span>
                     </Button>
                   ))}
                 </div>
