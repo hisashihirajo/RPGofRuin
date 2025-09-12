@@ -4,13 +4,14 @@ import GameInterface from "@/components/GameInterface";
 import CombatInterface from "@/components/CombatInterface";
 import InventorySystem from "@/components/InventorySystem";
 import RelationshipSystem from "@/components/RelationshipSystem";
+import MapInterface from "@/components/MapInterface";
 import ThemeToggle from "@/components/ThemeToggle";
 import chrisPortraitUrl from "@assets/chris_portrait.png";
 import soraPortraitUrl from "@assets/sora_portrait.png";
 import alexPortraitUrl from "@assets/alex_portrait.png";
 import divantePortraitUrl from "@assets/generated_images/Divante_character_portrait_7f9dc346.png";
 
-type GameState = "character-selection" | "main-game" | "combat" | "inventory" | "relationships";
+type GameState = "character-selection" | "main-game" | "combat" | "inventory" | "relationships" | "map";
 
 interface Character {
   id: string;
@@ -34,6 +35,7 @@ interface Character {
 export default function RPGGame() {
   const [gameState, setGameState] = useState<GameState>("character-selection");
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<string>("safe_shelter");
 
   // todo: remove mock functionality - convert character selection data to game character format
   const convertToGameCharacter = (character: any): Character => {
@@ -177,7 +179,7 @@ export default function RPGGame() {
           character={selectedCharacter}
           onCombatStart={() => setGameState("combat")}
           onInventoryOpen={() => setGameState("inventory")}
-          onMapOpen={() => console.log("Map opened - not implemented yet")}
+          onMapOpen={() => setGameState("map")}
           onRelationshipsOpen={() => setGameState("relationships")}
         />
       )}
@@ -204,6 +206,17 @@ export default function RPGGame() {
         <RelationshipSystem
           relationships={mockRelationships}
           onTalkTo={(id) => console.log(`Talking to: ${id}`)}
+          onClose={() => setGameState("main-game")}
+        />
+      )}
+
+      {gameState === "map" && (
+        <MapInterface
+          currentLocation={currentLocation}
+          onLocationSelect={(locationId) => {
+            setCurrentLocation(locationId);
+            setGameState("main-game");
+          }}
           onClose={() => setGameState("main-game")}
         />
       )}
