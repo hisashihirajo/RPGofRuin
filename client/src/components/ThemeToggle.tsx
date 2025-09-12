@@ -6,9 +6,21 @@ export default function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // Check if dark mode is already set
-    const isDarkMode = document.documentElement.classList.contains('dark');
+    // Force dark mode as default for the RPG game
+    const savedTheme = localStorage.getItem('theme');
+    // Always default to dark mode, only use light if explicitly set and confirmed
+    const isDarkMode = savedTheme !== 'light';
+    
     setIsDark(isDarkMode);
+    
+    // Apply the theme to the document
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
   }, []);
 
   const toggleTheme = () => {
