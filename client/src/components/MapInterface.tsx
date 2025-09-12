@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MapPin, Lock, CheckCircle } from "lucide-react";
+import { ArrowLeft, MapPin, Lock, CheckCircle, ArrowUp, ArrowDown, ArrowLeftIcon, ArrowRight } from "lucide-react";
+import worldMapUrl from "@assets/generated_images/Post-apocalyptic_JRPG_world_map_728cb46f.png";
 
 interface Location {
   id: string;
@@ -25,8 +26,10 @@ export default function MapInterface({
   onLocationSelect, 
   onClose 
 }: MapInterfaceProps) {
-  const [selectedLocation, setSelectedLocation] = useState<string>(currentLocation);
-  const [showLocationInfo, setShowLocationInfo] = useState(false);
+  // Player position on the map (percentage-based)
+  const [playerPosition, setPlayerPosition] = useState({ x: 50, y: 50 });
+  const [showLocationDialog, setShowLocationDialog] = useState(false);
+  const [nearbyLocation, setNearbyLocation] = useState<Location | null>(null);
 
   // Mock locations for the post-apocalyptic world
   const locations: Location[] = [
@@ -34,8 +37,8 @@ export default function MapInterface({
       id: "safe_shelter",
       name: "安全な避難所",
       description: "ディヴァンテが見つけた安全な隠れ家。ここから冒険が始まる。",
-      x: 20,
-      y: 60,
+      x: 25,
+      y: 70,
       isVisited: true,
       isAccessible: true,
       dangerLevel: "safe",
@@ -45,7 +48,7 @@ export default function MapInterface({
       id: "ruined_city",
       name: "廃墟の街",
       description: "終焉化の影響で廃墟と化した街。まだ使える物資が残っているかもしれない。",
-      x: 50,
+      x: 60,
       y: 40,
       isVisited: true,
       isAccessible: true,
@@ -56,8 +59,8 @@ export default function MapInterface({
       id: "mutator_settlement",
       name: "ミューテーター居住区",
       description: "ソラとアレックスが住む地区。友好的なミューテーターたちが生活している。",
-      x: 30,
-      y: 30,
+      x: 35,
+      y: 25,
       isVisited: false,
       isAccessible: true,
       dangerLevel: "safe",
@@ -67,8 +70,8 @@ export default function MapInterface({
       id: "industrial_ruins",
       name: "工業地帯の廃墟",
       description: "戦争前の工場跡地。危険だが、貴重な技術が眠っている可能性がある。",
-      x: 70,
-      y: 20,
+      x: 80,
+      y: 30,
       isVisited: false,
       isAccessible: true,
       dangerLevel: "dangerous",
@@ -78,8 +81,8 @@ export default function MapInterface({
       id: "underground_lab",
       name: "地下研究所",
       description: "終焉化の秘密を握る研究施設。まだ立ち入り禁止区域。",
-      x: 80,
-      y: 70,
+      x: 85,
+      y: 80,
       isVisited: false,
       isAccessible: false,
       dangerLevel: "dangerous",
@@ -89,8 +92,8 @@ export default function MapInterface({
       id: "old_battlefield",
       name: "古い戦場",
       description: "戦争の傷跡が残る荒野。何かの手がかりがあるかもしれない。",
-      x: 60,
-      y: 80,
+      x: 15,
+      y: 45,
       isVisited: false,
       isAccessible: true,
       dangerLevel: "dangerous",
@@ -98,13 +101,91 @@ export default function MapInterface({
     }
   ];
 
-  const selectedLocationData = locations.find(loc => loc.id === selectedLocation);
+  // Initialize player position based on current location
+  useEffect(() => {
+    const currentLoc = locations.find(loc => loc.id === currentLocation);
+    if (currentLoc) {
+      setPlayerPosition({ x: currentLoc.x, y: currentLoc.y });
+    }
+  }, [currentLocation]);
 
-  const getLocationIcon = (location: Location) => {
-    if (!location.isAccessible) return <Lock className="w-4 h-4 text-gray-500" />;
-    if (location.id === currentLocation) return <MapPin className="w-4 h-4 text-primary" />;
-    if (location.isVisited) return <CheckCircle className="w-4 h-4 text-green-400" />;
-    return <MapPin className="w-4 h-4 text-yellow-400" />;
+  // Check for nearby locations
+  useEffect(() => {
+    const nearby = locations.find(loc => {
+      const distance = Math.sqrt(
+        Math.pow(loc.x - playerPosition.x, 2) + Math.pow(loc.y - playerPosition.y, 2)
+      );
+      return distance < 8 && loc.isAccessible; // 8% distance threshold
+    });
+    setNearbyLocation(nearby || null);
+  }, [playerPosition]);
+
+  // Handle keyboard input for movement
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    const moveSpeed = 2; // Movement speed in percentage
+    
+    switch (event.key) {
+      case 'ArrowUp':
+      case 'w':
+      case 'W':
+        event.preventDefault();
+        setPlayerPosition(prev => ({ 
+          ...prev, 
+          y: Math.max(5, prev.y - moveSpeed) 
+        }));
+        break;
+      case 'ArrowDown':
+      case 's':
+      case 'S':
+        event.preventDefault();
+        setPlayerPosition(prev => ({ 
+          ...prev, 
+          y: Math.min(95, prev.y + moveSpeed) 
+        }));
+        break;
+      case 'ArrowLeft':
+      case 'a':
+      case 'A':
+        event.preventDefault();
+        setPlayerPosition(prev => ({ 
+          ...prev, 
+          x: Math.max(5, prev.x - moveSpeed) 
+        }));
+        break;
+      case 'ArrowRight':
+      case 'd':
+      case 'D':
+        event.preventDefault();
+        setPlayerPosition(prev => ({ 
+          ...prev, 
+          x: Math.min(95, prev.x + moveSpeed) 
+        }));
+        break;
+      case 'Enter':
+      case ' ':
+        if (nearbyLocation) {
+          setShowLocationDialog(true);
+        }
+        break;
+      case 'Escape':
+        event.preventDefault();
+        onClose();
+        break;
+    }
+  }, [nearbyLocation, onClose]);
+
+  // Add event listeners
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
+
+  const handleLocationEnter = () => {
+    if (nearbyLocation) {
+      onLocationSelect(nearbyLocation.id);
+    }
   };
 
   const getDangerColor = (dangerLevel: string) => {
@@ -116,16 +197,10 @@ export default function MapInterface({
     }
   };
 
-  const handleLocationClick = (location: Location) => {
-    if (!location.isAccessible) return;
-    setSelectedLocation(location.id);
-    setShowLocationInfo(true);
-  };
-
-  const handleTravelConfirm = () => {
-    if (selectedLocationData && selectedLocationData.isAccessible) {
-      onLocationSelect(selectedLocation);
-    }
+  const getLocationIcon = (location: Location) => {
+    if (!location.isAccessible) return <Lock className="w-3 h-3 text-gray-500" />;
+    if (location.isVisited) return <CheckCircle className="w-3 h-3 text-green-400" />;
+    return <MapPin className="w-3 h-3 text-yellow-400" />;
   };
 
   return (
@@ -138,59 +213,59 @@ export default function MapInterface({
         <div className="bg-slate-900/95 border-2 border-primary/50 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-primary">ワールドマップ</h1>
-            <Button
-              onClick={onClose}
-              variant="ghost"
-              size="sm"
-              className="text-primary hover:bg-primary/20"
-              data-testid="button-close-map"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              もどる
-            </Button>
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-primary">
+                十字キー/WASDで移動 • Enterで調査 • Escで戻る
+              </div>
+              <Button
+                onClick={onClose}
+                variant="ghost"
+                size="sm"
+                className="text-primary hover:bg-primary/20"
+                data-testid="button-close-map"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                もどる
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="relative z-10 px-4 pb-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
           
           {/* Map Display */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-3">
             <div className="bg-slate-900/95 border-2 border-primary/50 rounded-lg p-6">
               <div className="text-center text-primary font-semibold mb-4 border-b border-primary/30 pb-2">
                 終焉化した世界
               </div>
               
-              {/* Map Grid */}
-              <div className="relative w-full h-96 bg-slate-800/50 border border-slate-600 rounded">
-                {/* Grid Background */}
-                <div className="absolute inset-0 opacity-20">
-                  {Array.from({ length: 10 }).map((_, i) => (
-                    <div key={`h-${i}`} className="absolute w-full border-t border-slate-500" style={{ top: `${i * 10}%` }} />
-                  ))}
-                  {Array.from({ length: 10 }).map((_, i) => (
-                    <div key={`v-${i}`} className="absolute h-full border-l border-slate-500" style={{ left: `${i * 10}%` }} />
-                  ))}
-                </div>
+              {/* World Map */}
+              <div className="relative w-full h-96 bg-slate-800/50 border border-slate-600 rounded overflow-hidden">
+                {/* Background World Map Image */}
+                <img 
+                  src={worldMapUrl} 
+                  alt="World Map" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-80"
+                />
+                
+                {/* Dark overlay for better visibility */}
+                <div className="absolute inset-0 bg-slate-900/60" />
 
                 {/* Location Markers */}
                 {locations.map((location) => (
                   <div
                     key={location.id}
-                    className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer ${
-                      location.isAccessible ? 'hover:scale-110' : 'cursor-not-allowed'
-                    } ${selectedLocation === location.id ? 'scale-125' : ''}`}
+                    className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10"
                     style={{ left: `${location.x}%`, top: `${location.y}%` }}
-                    onClick={() => handleLocationClick(location)}
                     data-testid={`location-${location.id}`}
                   >
-                    <div className={`p-2 rounded-full ${
-                      selectedLocation === location.id 
-                        ? 'bg-primary/30 border-2 border-primary' 
-                        : location.isAccessible 
-                          ? 'bg-slate-700/80 border border-slate-500 hover:bg-slate-600/80'
-                          : 'bg-slate-800/60 border border-slate-600'
+                    <div className={`p-1 rounded-full ${
+                      location.isAccessible 
+                        ? 'bg-slate-700/80 border border-slate-500'
+                        : 'bg-slate-800/60 border border-slate-600'
                     }`}>
                       {getLocationIcon(location)}
                     </div>
@@ -205,87 +280,141 @@ export default function MapInterface({
                     </div>
                   </div>
                 ))}
+
+                {/* Player Character */}
+                <div
+                  className="absolute transform -translate-x-1/2 -translate-y-1/2 z-20 transition-all duration-200"
+                  style={{ left: `${playerPosition.x}%`, top: `${playerPosition.y}%` }}
+                  data-testid="player-position"
+                >
+                  <div className="relative">
+                    <div className="w-6 h-6 bg-primary border-2 border-primary-foreground rounded-full animate-pulse" />
+                    <div className="absolute -top-1 -left-1 w-8 h-8 border-2 border-primary rounded-full animate-ping opacity-30" />
+                    
+                    {/* Player Name */}
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1">
+                      <div className="text-xs px-2 py-1 rounded bg-primary/90 text-primary-foreground font-semibold whitespace-nowrap">
+                        クリス
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Location Info Panel */}
-          <div className="lg:col-span-1">
+          {/* Controls and Info Panel */}
+          <div className="lg:col-span-1 space-y-4">
+            
+            {/* Movement Controls */}
             <div className="bg-slate-900/95 border-2 border-primary/50 rounded-lg p-4">
-              <div className="text-center text-primary font-semibold mb-4 border-b border-primary/30 pb-2">
-                場所情報
+              <div className="text-center text-primary font-semibold mb-3 border-b border-primary/30 pb-2">
+                移動操作
               </div>
+              
+              <div className="grid grid-cols-3 gap-1 max-w-24 mx-auto mb-4">
+                <div></div>
+                <Button
+                  onMouseDown={() => setPlayerPosition(prev => ({ ...prev, y: Math.max(5, prev.y - 2) }))}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  data-testid="button-move-up"
+                >
+                  <ArrowUp className="w-3 h-3" />
+                </Button>
+                <div></div>
+                
+                <Button
+                  onMouseDown={() => setPlayerPosition(prev => ({ ...prev, x: Math.max(5, prev.x - 2) }))}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  data-testid="button-move-left"
+                >
+                  <ArrowLeftIcon className="w-3 h-3" />
+                </Button>
+                <div className="flex items-center justify-center">
+                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                </div>
+                <Button
+                  onMouseDown={() => setPlayerPosition(prev => ({ ...prev, x: Math.min(95, prev.x + 2) }))}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  data-testid="button-move-right"
+                >
+                  <ArrowRight className="w-3 h-3" />
+                </Button>
+                
+                <div></div>
+                <Button
+                  onMouseDown={() => setPlayerPosition(prev => ({ ...prev, y: Math.min(95, prev.y + 2) }))}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  data-testid="button-move-down"
+                >
+                  <ArrowDown className="w-3 h-3" />
+                </Button>
+                <div></div>
+              </div>
+              
+              <div className="text-xs text-gray-400 text-center">
+                キーボード: 十字キー/WASD
+              </div>
+            </div>
 
-              {selectedLocationData ? (
-                <div className="space-y-4">
+            {/* Location Info */}
+            {nearbyLocation && (
+              <div className="bg-slate-900/95 border-2 border-primary/50 rounded-lg p-4">
+                <div className="text-center text-primary font-semibold mb-3 border-b border-primary/30 pb-2">
+                  近くの場所
+                </div>
+                
+                <div className="space-y-3">
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
-                      {selectedLocationData.name}
+                    <h3 className="text-lg font-semibold text-white mb-1">
+                      {nearbyLocation.name}
                     </h3>
                     <div className="flex items-center gap-2 mb-2">
-                      {getLocationIcon(selectedLocationData)}
-                      <span className={`text-sm ${getDangerColor(selectedLocationData.dangerLevel)}`}>
-                        {selectedLocationData.dangerLevel === "safe" && "安全"}
-                        {selectedLocationData.dangerLevel === "moderate" && "注意"}
-                        {selectedLocationData.dangerLevel === "dangerous" && "危険"}
+                      {getLocationIcon(nearbyLocation)}
+                      <span className={`text-sm ${getDangerColor(nearbyLocation.dangerLevel)}`}>
+                        {nearbyLocation.dangerLevel === "safe" && "安全"}
+                        {nearbyLocation.dangerLevel === "moderate" && "注意"}
+                        {nearbyLocation.dangerLevel === "dangerous" && "危険"}
                       </span>
                     </div>
                   </div>
 
                   <div className="text-sm text-gray-300 leading-relaxed">
-                    {selectedLocationData.description}
+                    {nearbyLocation.description}
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="text-xs text-gray-400">
-                      状態: {selectedLocationData.isVisited ? "訪問済み" : "未訪問"}
-                    </div>
-                    {selectedLocationData.id === currentLocation && (
-                      <div className="text-xs text-primary font-semibold">
-                        現在地
-                      </div>
-                    )}
+                  <Button
+                    onClick={handleLocationEnter}
+                    className="w-full bg-primary/80 hover:bg-primary text-primary-foreground"
+                    data-testid="button-enter-location"
+                  >
+                    この場所に入る
+                  </Button>
+                  
+                  <div className="text-xs text-gray-400 text-center">
+                    Enter / Spaceキーでも入場可能
                   </div>
-
-                  {/* Travel Button */}
-                  {selectedLocationData.isAccessible && selectedLocationData.id !== currentLocation && (
-                    <Button
-                      onClick={handleTravelConfirm}
-                      className="w-full bg-primary/80 hover:bg-primary text-primary-foreground"
-                      data-testid="button-travel"
-                    >
-                      移動する
-                    </Button>
-                  )}
-
-                  {!selectedLocationData.isAccessible && (
-                    <div className="text-center">
-                      <div className="text-xs text-gray-400 mb-2">
-                        <Lock className="w-4 h-4 mx-auto mb-1" />
-                        立ち入り禁止
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        まだアクセスできません
-                      </div>
-                    </div>
-                  )}
                 </div>
-              ) : (
-                <div className="text-center text-gray-400 text-sm">
-                  地図上の場所を選択してください
-                </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Legend */}
-            <div className="bg-slate-900/95 border-2 border-primary/50 rounded-lg p-4 mt-4">
+            <div className="bg-slate-900/95 border-2 border-primary/50 rounded-lg p-4">
               <div className="text-center text-primary font-semibold mb-3 border-b border-primary/30 pb-2">
                 凡例
               </div>
               <div className="space-y-2 text-xs">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-3 h-3 text-primary" />
-                  <span className="text-white">現在地</span>
+                  <div className="w-3 h-3 bg-primary rounded-full"></div>
+                  <span className="text-white">プレイヤー</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-3 h-3 text-green-400" />
