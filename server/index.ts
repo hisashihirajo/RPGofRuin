@@ -64,7 +64,8 @@ app.use((req, res, next) => {
   const listenOptions: Parameters<typeof server.listen>[0] = {
     port,
     host: "0.0.0.0",
-    ...(process.platform === "win32" ? {} : { reusePort: true }),
+    // reusePort は Linux でのみサポート（macOS/Windows は ENOTSUP になる）
+    ...(process.platform === "linux" ? { reusePort: true } : {}),
   };
 
   server.listen(listenOptions, () => {

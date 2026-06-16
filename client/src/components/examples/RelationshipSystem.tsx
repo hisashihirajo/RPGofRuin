@@ -1,7 +1,7 @@
 import RelationshipSystem from '../RelationshipSystem'
-import divantePortraitUrl from "@assets/generated_images/Divante_character_portrait_7f9dc346.png";
-import soraPortraitUrl from "@assets/sora_portrait.png";
-import alexPortraitUrl from "@assets/alex_portrait.png";
+import divantePortraitUrl from "@assets/generated_images/Divante_character_portrait_7f9dc346.webp";
+import soraPortraitUrl from "@assets/sora_portrait.webp";
+import alexPortraitUrl from "@assets/alex_portrait.webp";
 
 export default function RelationshipSystemExample() {
   //todo: remove mock functionality

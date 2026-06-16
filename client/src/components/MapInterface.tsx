@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MapPin, Lock, CheckCircle, ArrowUp, ArrowDown, ArrowLeftIcon, ArrowRight } from "lucide-react";
-import worldMapUrl from "@assets/generated_images/Post-apocalyptic_JRPG_world_map_728cb46f.png";
+import worldMapUrl from "@assets/generated_images/Post-apocalyptic_JRPG_world_map_728cb46f.webp";
 
 interface Location {
   id: string;

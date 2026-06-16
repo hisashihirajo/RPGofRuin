@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ArrowLeft, Heart, Shield, Sparkles, Swords, Zap } from "lucide-react";
-import mutatorBattleUrl from "@assets/mutator_battle_cutout.png";
+import mutatorBattleUrl from "@assets/mutator_battle_cutout.webp";
 
 interface CombatAbility {
   name: string;

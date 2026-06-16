@@ -8,11 +8,11 @@ import MapInterface from "@/components/MapInterface";
 import LocalMapInterface from "@/components/LocalMapInterface";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useToast } from "@/hooks/use-toast";
-import chrisPortraitUrl from "@assets/chris_portrait.png";
-import soraPortraitUrl from "@assets/sora_portrait.png";
-import alexPortraitUrl from "@assets/alex_portrait.png";
-import tyrPortraitUrl from "@assets/tyr_portrait.png";
-import divantePortraitUrl from "@assets/generated_images/Divante_character_portrait_7f9dc346.png";
+import chrisPortraitUrl from "@assets/chris_portrait.webp";
+import soraPortraitUrl from "@assets/sora_portrait.webp";
+import alexPortraitUrl from "@assets/alex_portrait.webp";
+import tyrPortraitUrl from "@assets/tyr_portrait.webp";
+import divantePortraitUrl from "@assets/generated_images/Divante_character_portrait_7f9dc346.webp";
 
 type GameState = "character-selection" | "main-game" | "combat" | "inventory" | "relationships" | "map" | "local-map";
 

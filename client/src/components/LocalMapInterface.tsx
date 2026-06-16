@@ -3,12 +3,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowUp, ArrowDown, ArrowLeftIcon, ArrowRight, Search, Users, Package, Lock } from "lucide-react";
 
 // Import local map images - Updated with area-specific detailed maps
-import safeShelterMap from "@assets/generated_images/Safe_shelter_interior_map_e91461c3.png";
-import ruinedCityMap from "@assets/generated_images/Ruined_city_exploration_map_595fa71d.png";
-import mutatorSettlementMap from "@assets/generated_images/Mutator_settlement_community_map_63779bed.png";
-import industrialRuinsMap from "@assets/generated_images/Industrial_ruins_factory_map_1dc26719.png";
-import undergroundLabMap from "@assets/generated_images/Underground_research_lab_map_76cb2c40.png";
-import oldBattlefieldMap from "@assets/generated_images/Old_battlefield_war_map_d3bc0dc1.png";
+import safeShelterMap from "@assets/generated_images/Safe_shelter_interior_map_e91461c3.webp";
+import ruinedCityMap from "@assets/generated_images/Ruined_city_exploration_map_595fa71d.webp";
+import mutatorSettlementMap from "@assets/generated_images/Mutator_settlement_community_map_63779bed.webp";
+import industrialRuinsMap from "@assets/generated_images/Industrial_ruins_factory_map_1dc26719.webp";
+import undergroundLabMap from "@assets/generated_images/Underground_research_lab_map_76cb2c40.webp";
+import oldBattlefieldMap from "@assets/generated_images/Old_battlefield_war_map_d3bc0dc1.webp";
 
 interface InteractionPoint {
   id: string;

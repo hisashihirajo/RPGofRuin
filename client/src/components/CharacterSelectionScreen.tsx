@@ -1,10 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import chrisPortraitUrl from "@assets/chris_portrait.png";
-import soraPortraitUrl from "@assets/sora_portrait.png";
-import alexPortraitUrl from "@assets/alex_portrait.png";
-import worldBackgroundUrl from "@assets/generated_images/Post-apocalyptic_world_overview_scene_51792660.png";
+import chrisPortraitUrl from "@assets/chris_portrait.webp";
+import soraPortraitUrl from "@assets/sora_portrait.webp";
+import alexPortraitUrl from "@assets/alex_portrait.webp";
+import worldBackgroundUrl from "@assets/generated_images/Post-apocalyptic_world_overview_scene_51792660.webp";
 
 interface Character {
   id: string;
