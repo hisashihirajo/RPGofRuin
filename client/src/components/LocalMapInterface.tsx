@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowUp, ArrowDown, ArrowLeftIcon, ArrowRight, Search, Users, Package } from "lucide-react";
+import { ArrowLeft, ArrowUp, ArrowDown, ArrowLeftIcon, ArrowRight, Search, Users, Package, Lock } from "lucide-react";
 
 // Import local map images - Updated with area-specific detailed maps
 import safeShelterMap from "@assets/generated_images/Safe_shelter_interior_map_e91461c3.png";
@@ -156,8 +156,41 @@ export default function LocalMapInterface({
     setNearbyPoint(nearby || null);
   }, [playerPosition, mapData.points]);
 
+  const handleInteraction = useCallback(() => {
+    if (!nearbyPoint) return;
+    
+    if (nearbyPoint.type === "exit") {
+      onWorldMap();
+      return;
+    }
+
+    if (!nearbyPoint.isAccessible) {
+      setDialogText(`アクセスできません: ${nearbyPoint.requirement || "条件を満たしていません"}`);
+      setShowDialog(true);
+      return;
+    }
+
+    // Handle different interaction types
+    switch (nearbyPoint.type) {
+      case "npc":
+        setDialogText(`${nearbyPoint.name}と話している: "${nearbyPoint.description}"`);
+        break;
+      case "item":
+        setDialogText(`${nearbyPoint.name}を調べた: ${nearbyPoint.description}`);
+        break;
+      case "shop":
+        setDialogText(`${nearbyPoint.name}にアクセスした: ${nearbyPoint.description}`);
+        break;
+      case "story":
+        setDialogText(`${nearbyPoint.name}: ${nearbyPoint.description}`);
+        break;
+    }
+    
+    setShowDialog(true);
+    onInteract(nearbyPoint.id);
+  }, [nearbyPoint, onInteract, onWorldMap]);
+
   // Handle keyboard input for movement
-  // Stable keyboard handler that doesn't recreate on every render
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     const moveSpeed = 2;
     
@@ -201,7 +234,6 @@ export default function LocalMapInterface({
       case 'Enter':
       case ' ':
         event.preventDefault();
-        // Directly check nearbyPoint state and call interaction
         handleInteraction();
         break;
       case 'Escape':
@@ -209,9 +241,9 @@ export default function LocalMapInterface({
         onExit();
         break;
     }
-  }, [onExit]); // Only depend on onExit, not nearbyPoint
+  }, [handleInteraction, onExit]);
 
-  // Add event listeners - now stable since handleKeyPress doesn't change often
+  // Add event listeners
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
     return () => {
@@ -219,42 +251,27 @@ export default function LocalMapInterface({
     };
   }, [handleKeyPress]);
 
-  const handleInteraction = () => {
-    if (!nearbyPoint) return;
-    
-    if (nearbyPoint.type === "exit") {
-      onWorldMap();
-      return;
+  const handlePointClick = (point: InteractionPoint) => {
+    setPlayerPosition({ x: point.x, y: point.y });
+    if (point.isAccessible) {
+      if (point.type === "exit") {
+        onWorldMap();
+      } else {
+        switch (point.type) {
+          case "npc":
+            setDialogText(`${point.name}と話している: "${point.description}"`);
+            break;
+          default:
+            setDialogText(`${point.name}: ${point.description}`);
+        }
+        setShowDialog(true);
+        onInteract(point.id);
+      }
     }
-
-    if (!nearbyPoint.isAccessible) {
-      setDialogText(`アクセスできません: ${nearbyPoint.requirement || "条件を満たしていません"}`);
-      setShowDialog(true);
-      return;
-    }
-
-    // Handle different interaction types
-    switch (nearbyPoint.type) {
-      case "npc":
-        setDialogText(`${nearbyPoint.name}と話している: "${nearbyPoint.description}"`);
-        break;
-      case "item":
-        setDialogText(`${nearbyPoint.name}を調べた: ${nearbyPoint.description}`);
-        break;
-      case "shop":
-        setDialogText(`${nearbyPoint.name}にアクセスした: ${nearbyPoint.description}`);
-        break;
-      case "story":
-        setDialogText(`${nearbyPoint.name}: ${nearbyPoint.description}`);
-        break;
-    }
-    
-    setShowDialog(true);
-    onInteract(nearbyPoint.id);
   };
 
   const getPointIcon = (point: InteractionPoint) => {
-    if (!point.isAccessible) return <div className="w-3 h-3 bg-gray-500 rounded border border-gray-600" />;
+    if (!point.isAccessible) return <Lock className="w-3 h-3 text-gray-500" />;
     
     switch (point.type) {
       case "npc": return <Users className="w-3 h-3 text-blue-400" />;
@@ -321,8 +338,9 @@ export default function LocalMapInterface({
                 {mapData.points.map((point) => (
                   <div
                     key={point.id}
-                    className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10"
+                    className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer"
                     style={{ left: `${point.x}%`, top: `${point.y}%` }}
+                    onClick={() => handlePointClick(point)}
                     data-testid={`point-${point.id}`}
                   >
                     <div className={`p-1 rounded-full ${

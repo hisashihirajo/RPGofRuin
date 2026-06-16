@@ -81,6 +81,7 @@ export default function RelationshipSystemExample() {
     <RelationshipSystem 
       relationships={mockRelationships}
       onTalkTo={(id) => console.log(`Talking to: ${id}`)}
+      onGift={(id) => console.log(`Gifting to: ${id}`)}
       onClose={() => console.log('Relationships closed')}
     />
   )

@@ -16,9 +16,9 @@ export default function CombatInterfaceExample() {
       speed: 75,
       type: "ally" as const,
       abilities: [
-        { name: "剣撃", cost: 5, damage: 25, description: "基本的な剣攻撃" },
-        { name: "回復", cost: 10, damage: 0, description: "HPを20回復" },
-        { name: "集中", cost: 15, damage: 35, description: "強力な一撃" }
+        { name: "ルインブレイザー", cost: 6, damage: 30, description: "崩壊粒子を刃に乗せる", kind: "strike" as const, target: "enemy" as const },
+        { name: "ネオン・スパーク", cost: 9, damage: 34, description: "光る異能の雷撃", kind: "arcane" as const, target: "enemy" as const },
+        { name: "アストラルリペア", cost: 10, damage: 38, description: "HPを回復する", kind: "heal" as const, target: "self" as const }
       ]
     },
     {
@@ -32,9 +32,9 @@ export default function CombatInterfaceExample() {
       speed: 85,
       type: "ally" as const,
       abilities: [
-        { name: "爪撃", cost: 3, damage: 20, description: "素早い爪攻撃" },
-        { name: "叫び", cost: 8, damage: 15, description: "敵を怯ませる" },
-        { name: "突進", cost: 12, damage: 40, description: "全力の体当たり" }
+        { name: "クロウ・ラッシュ", cost: 4, damage: 24, description: "素早い連続爪撃", kind: "strike" as const, target: "enemy" as const },
+        { name: "ヴォイドハウル", cost: 8, damage: 30, description: "空間を震わせる咆哮", kind: "arcane" as const, target: "enemy" as const },
+        { name: "ミラージュガード", cost: 5, damage: 0, description: "次の被ダメージを抑える", kind: "guard" as const, target: "self" as const }
       ]
     }
   ];

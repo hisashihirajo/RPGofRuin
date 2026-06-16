@@ -24,9 +24,11 @@ export default function GameInterfaceExample() {
   return (
     <GameInterface 
       character={mockCharacter}
+      currentLocation="safe_shelter"
       onCombatStart={() => console.log('Combat started')}
       onInventoryOpen={() => console.log('Inventory opened')}
       onMapOpen={() => console.log('Map opened')}
+      onLocalMapOpen={() => console.log('Local map opened')}
       onRelationshipsOpen={() => console.log('Relationships opened')}
     />
   )
